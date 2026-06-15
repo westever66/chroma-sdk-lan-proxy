@@ -1,0 +1,24 @@
+# Chroma SDK LAN Proxy configuration.
+#
+# For a stable Home Assistant setup, set bind_host and advertise_host to this
+# Windows PC's LAN IP address.
+
+bind_host = "192.168.0.52"
+advertise_host = "192.168.0.52"
+
+public_port = 15435
+
+local_host = "127.0.0.1"
+local_port = 54235
+
+session_port_start = 15436
+session_port_end = 15499
+
+timeout = 10.0
+debug = false
+
+log_file = "%LOCALAPPDATA%/ChromaSdkLanProxy/logs/proxy.log"
+
+# Optional. Leave empty to allow any LAN client that can reach the Windows
+# firewall rule. Set this to your Home Assistant host IP for a tighter setup.
+# allowed_clients = ["192.168.0.66"]
