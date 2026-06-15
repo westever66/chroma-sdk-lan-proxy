@@ -66,7 +66,8 @@ Remove autostart:
 ```
 
 The default scheduled task waits 30 seconds after login so Razer Synapse has
-time to start.
+time to start. Autostart uses a small VBScript launcher so the proxy starts
+without leaving a terminal window on the desktop.
 
 If Windows policy blocks scheduled task creation, the installer falls back to a
 current-user Startup folder launcher.
@@ -76,6 +77,12 @@ execution, run this one-time command instead:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-autostart.ps1
+```
+
+For manual hidden startup after installation:
+
+```powershell
+wscript.exe "$env:LOCALAPPDATA\ChromaSdkLanProxy\start-proxy-hidden.vbs"
 ```
 
 ## Configuration

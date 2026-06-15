@@ -42,9 +42,17 @@ exit /b %ERRORLEVEL%
 "@
 Set-Content -Path $launcherPath -Value $launcher -Encoding ASCII
 
+$hiddenLauncherPath = Join-Path $appDir "start-proxy-hidden.vbs"
+$vbsLauncherPath = $launcherPath.Replace('"', '""')
+$hiddenLauncher = @"
+Set WshShell = CreateObject("WScript.Shell")
+WshShell.Run """$vbsLauncherPath""", 0, False
+"@
+Set-Content -Path $hiddenLauncherPath -Value $hiddenLauncher -Encoding ASCII
+
 $registeredTask = $false
 try {
-    $action = New-ScheduledTaskAction -Execute $launcherPath
+    $action = New-ScheduledTaskAction -Execute "wscript.exe" -Argument "`"$hiddenLauncherPath`""
     $trigger = New-ScheduledTaskTrigger -AtLogOn
     $trigger.Delay = "PT${StartupDelaySeconds}S"
     $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
@@ -70,21 +78,17 @@ try {
     Write-Host "Falling back to the current user's Startup folder."
     $startupDir = [Environment]::GetFolderPath("Startup")
     $startupFile = Join-Path $startupDir "$TaskName.vbs"
-    $vbsLauncherPath = $launcherPath.Replace('"', '""')
-    $startupLauncher = @"
-Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run """$vbsLauncherPath""", 0, False
-"@
-    Set-Content -Path $startupFile -Value $startupLauncher -Encoding ASCII
+    Copy-Item -LiteralPath $hiddenLauncherPath -Destination $startupFile -Force
     Write-Host "Registered Startup folder launcher: $startupFile"
 }
 
 Write-Host "Config: $ConfigPath"
 Write-Host "Launcher: $launcherPath"
+Write-Host "Hidden launcher: $hiddenLauncherPath"
 if ($registeredTask) {
     Write-Host "Run now with:"
     Write-Host "  Start-ScheduledTask -TaskName `"$TaskName`""
 } else {
     Write-Host "Run now with:"
-    Write-Host "  $launcherPath"
+    Write-Host "  wscript.exe `"$hiddenLauncherPath`""
 }

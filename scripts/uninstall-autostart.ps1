@@ -28,3 +28,9 @@ if (Test-Path $startupFile) {
 if (-not $removed) {
     Write-Host "Autostart entry not found: $TaskName"
 }
+
+$appDir = Join-Path $env:LOCALAPPDATA "ChromaSdkLanProxy"
+$hiddenLauncherPath = Join-Path $appDir "start-proxy-hidden.vbs"
+if (Test-Path $hiddenLauncherPath) {
+    Write-Host "Hidden launcher remains for manual reuse: $hiddenLauncherPath"
+}
